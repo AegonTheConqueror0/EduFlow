@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net default catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Authentication verification helper
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Attribute-Based ownership validation helper
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ID character structure validation helper
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Invariant validation helper for Presentations
+    function isValidPresentation(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.title is string && data.title.size() <= 200
+        && data.userId is string && data.userId.size() <= 128
+        && data.slides is list
+        && data.lastSavedAt is string;
+    }
+
+    // Presentations routes
+    match /users/{userId}/presentations/{presentationId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(presentationId) && isValidPresentation(request.resource.data);
+      allow update: if isOwner(userId) && isValidPresentation(request.resource.data);
+      allow delete: if isOwner(userId);
+    }
+
+    // Invariant validation helper for ClassRosters
+    function isValidRoster(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 200
+        && data.userId is string && data.userId.size() <= 128
+        && data.students is list;
+    }
+
+    // Roster routes
+    match /users/{userId}/rosters/{rosterId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(rosterId) && isValidRoster(request.resource.data);
+      allow update: if isOwner(userId) && isValidRoster(request.resource.data);
+      allow delete: if isOwner(userId);
+    }
+  }
+}

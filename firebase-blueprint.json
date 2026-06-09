@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Presentation": {
+      "title": "Presentation",
+      "description": "EduFlow Presentation Deck containing slides and branding logo configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the presentation" },
+        "title": { "type": "string", "description": "Title of the presentation" },
+        "userId": { "type": "string", "description": "The owner UID of the presentation" },
+        "slides": { "type": "array", "description": "Array of slides in the presentation" },
+        "lastSavedAt": { "type": "string", "description": "Timestamp of last edit" },
+        "logoUrl": { "type": "string", "description": "Logo URL" },
+        "logos": { "type": "array", "description": "Array of logos URLs" },
+        "logoAlignment": { "type": "string", "description": "Alignment of the logo" }
+      },
+      "required": ["id", "title", "userId", "slides", "lastSavedAt"]
+    },
+    "ClassRoster": {
+      "title": "ClassRoster",
+      "description": "Roster of students for oral recitation sessions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the roster" },
+        "name": { "type": "string", "description": "Name of the class roster" },
+        "userId": { "type": "string", "description": "The creator's user ID" },
+        "students": { "type": "array", "description": "Array of students in this roster" }
+      },
+      "required": ["id", "name", "userId", "students"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/presentations/{presentationId}": {
+      "schema": "Presentation",
+      "description": "User-specific slide presentations and brand logos catalog"
+    },
+    "/users/{userId}/rosters/{rosterId}": {
+      "schema": "ClassRoster",
+      "description": "Class rosters for the teacher"
+    }
+  }
+}

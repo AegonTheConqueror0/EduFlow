@@ -1,0 +1,6 @@
+{
+  "name": "EduFlow Interactive",
+  "description": "An automated, interactive presentation tool for educators featuring modular slide decks, a visual recitation roulette, and a dual presenter dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
