@@ -5,7 +5,7 @@ import PresenterDashboard from './components/PresenterDashboard';
 import PublicView from './components/PublicView';
 import PresentationManager from './components/PresentationManager';
 import LandingPage from './components/LandingPage';
-import { auth, db } from './firebase';
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { 
   collection, 
@@ -57,6 +57,11 @@ export default function App() {
 
   // Helper: Save presentation to Firestore
   const savePresentationToFirestore = async (pres: Presentation, uid: string) => {
+    if (!uid || uid.startsWith('demo-') || !auth.currentUser) {
+      console.log('Skipping Firestore save for guest/demo session.');
+      return;
+    }
+    const path = `users/${uid}/presentations/${pres.id}`;
     try {
       const docRef = doc(db, 'users', uid, 'presentations', pres.id);
       await setDoc(docRef, {
@@ -71,21 +76,33 @@ export default function App() {
       });
     } catch (err) {
       console.error('Failed to save presentation to Firestore:', err);
+      handleFirestoreError(err, OperationType.WRITE, path);
     }
   };
 
   // Helper: Delete presentation from Firestore
   const deletePresentationFromFirestore = async (presId: string, uid: string) => {
+    if (!uid || uid.startsWith('demo-') || !auth.currentUser) {
+      console.log('Skipping Firestore delete for guest/demo session.');
+      return;
+    }
+    const path = `users/${uid}/presentations/${presId}`;
     try {
       const docRef = doc(db, 'users', uid, 'presentations', presId);
       await deleteDoc(docRef);
     } catch (err) {
       console.error('Failed to delete presentation from Firestore:', err);
+      handleFirestoreError(err, OperationType.DELETE, path);
     }
   };
 
   // Helper: Save roster to Firestore
   const saveRosterToFirestore = async (updatedStudents: Student[], uid: string) => {
+    if (!uid || uid.startsWith('demo-') || !auth.currentUser) {
+      console.log('Skipping Firestore roster save for guest/demo session.');
+      return;
+    }
+    const path = `users/${uid}/rosters/default_roster`;
     try {
       const docRef = doc(db, 'users', uid, 'rosters', 'default_roster');
       await setDoc(docRef, {
@@ -96,6 +113,7 @@ export default function App() {
       });
     } catch (err) {
       console.error('Failed to save roster to Firestore:', err);
+      handleFirestoreError(err, OperationType.WRITE, path);
     }
   };
 
@@ -107,7 +125,15 @@ export default function App() {
         setLoadingWorkspace(true);
         try {
           // 1. Fetch user presentations from Firestore
-          const qSnap = await getDocs(collection(db, 'users', currentUser.uid, 'presentations'));
+          const collectionPath = `users/${currentUser.uid}/presentations`;
+          let qSnap;
+          try {
+            qSnap = await getDocs(collection(db, 'users', currentUser.uid, 'presentations'));
+          } catch (err) {
+            handleFirestoreError(err, OperationType.GET, collectionPath);
+            throw err;
+          }
+
           const fetchedPresentations: Presentation[] = [];
           qSnap.forEach(docSnap => {
             fetchedPresentations.push(docSnap.data() as Presentation);
@@ -142,8 +168,16 @@ export default function App() {
           }
 
           // 2. Fetch user class roster from Firestore
+          const rosterPath = `users/${currentUser.uid}/rosters/default_roster`;
           const rosterRef = doc(db, 'users', currentUser.uid, 'rosters', 'default_roster');
-          const rosterSnap = await getDoc(rosterRef);
+          let rosterSnap;
+          try {
+            rosterSnap = await getDoc(rosterRef);
+          } catch (err) {
+            handleFirestoreError(err, OperationType.GET, rosterPath);
+            throw err;
+          }
+
           if (rosterSnap.exists()) {
             const rosterData = rosterSnap.data();
             if (rosterData && Array.isArray(rosterData.students)) {
@@ -779,60 +813,51 @@ export default function App() {
           
           {/* VIEW: Split screen (Dual projection) - THE ULTIMATE EXPERIMENTAL PLAYGROUND! */}
           {viewMode === 'split' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              
-              {/* Educator Admin Dashboard panel (Left) */}
-              <div className="lg:col-span-6 space-y-4">
-                <div className="flex items-center space-x-2 bg-slate-800 text-white px-4 py-2 rounded-t-xl text-xs font-semibold justify-between shadow">
-                  <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 bg-amber-400 rounded-full" />
-                    Educator Panel Mode (Dashboard controls)
-                  </span>
-                  <span className="text-[10px] font-mono opacity-60">Admin Console</span>
+            <PresenterDashboard
+              slides={slides}
+              activeSlideId={activeSlideId}
+              onSelectSlide={setActiveSlideId}
+              onUpdateSlides={handleUpdateSlides}
+              students={students}
+              onUpdateRoster={handleUpdateRoster}
+              onStudentSelected={handleStudentSelectedByRoulette}
+              countdownValue={countdownValue}
+              isAutoplayRunning={isAutoplayRunning}
+              onToggleAutoplay={handleToggleAutoplay}
+              layoutMode="split"
+              centerElement={
+                <div className="flex flex-col h-full bg-white rounded-2xl border border-flat-border shadow-3xs overflow-hidden">
+                  <div className="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2.5 text-xs font-semibold justify-between shadow shrink-0 select-none">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
+                      Public Student Presentation View
+                    </span>
+                    <span className="text-[10px] font-mono opacity-60">Projector Screen Output</span>
+                  </div>
+                  <div className="flex-1 min-h-0 p-5 bg-slate-950 flex flex-col justify-center items-center overflow-y-auto relative" style={{ backgroundImage: 'radial-gradient(circle at center, #1e293b 0%, #020617 100%)' }}>
+                    <div className="w-full max-w-[95%]">
+                      <PublicView
+                        activeSlide={activeSlide}
+                        activeStudent={activeStudent}
+                        onClearActiveStudent={handleClearActiveStudent}
+                        countdownValue={countdownValue}
+                        totalSlidesCount={slides.length}
+                        currentSlideIndex={activeSlideIndex}
+                        onNextSlide={handleNextSlide}
+                        onPrevSlide={handlePrevSlide}
+                        logoUrl={activePresentation?.logoUrl}
+                        logos={activePresentation?.logos}
+                        logoAlignment={activePresentation?.logoAlignment}
+                        students={students}
+                        onUpdateRoster={handleUpdateRoster}
+                        onStudentSelected={handleStudentSelectedByRoulette}
+                        previewMode={true}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-slate-100 rounded-b-xl border p-4 shadow-sm" style={{ minHeight: '600px' }}>
-                  <PresenterDashboard
-                    slides={slides}
-                    activeSlideId={activeSlideId}
-                    onSelectSlide={setActiveSlideId}
-                    onUpdateSlides={handleUpdateSlides}
-                    students={students}
-                    onUpdateRoster={handleUpdateRoster}
-                    onStudentSelected={handleStudentSelectedByRoulette}
-                    countdownValue={countdownValue}
-                    isAutoplayRunning={isAutoplayRunning}
-                    onToggleAutoplay={handleToggleAutoplay}
-                  />
-                </div>
-              </div>
-
-              {/* Public projection screens panel (Right) */}
-              <div className="lg:col-span-6 space-y-4">
-                <div className="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2 rounded-t-xl text-xs font-semibold justify-between shadow">
-                  <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />
-                    Public Student Presentation View (Projector screen output)
-                  </span>
-                  <span className="text-[10px] font-mono opacity-60">投影画面 Output</span>
-                </div>
-                <div className="bg-white rounded-b-xl border p-4 shadow-sm flex flex-col justify-center" style={{ minHeight: '600px' }}>
-                  <PublicView
-                    activeSlide={activeSlide}
-                    activeStudent={activeStudent}
-                    onClearActiveStudent={handleClearActiveStudent}
-                    countdownValue={countdownValue}
-                    totalSlidesCount={slides.length}
-                    currentSlideIndex={activeSlideIndex}
-                    onNextSlide={handleNextSlide}
-                    onPrevSlide={handlePrevSlide}
-                    logoUrl={activePresentation?.logoUrl}
-                    logos={activePresentation?.logos}
-                    logoAlignment={activePresentation?.logoAlignment}
-                  />
-                </div>
-              </div>
-
-            </div>
+              }
+            />
           )}
 
           {/* VIEW: Standalone dashboard */}
@@ -868,6 +893,9 @@ export default function App() {
                 logoUrl={activePresentation?.logoUrl}
                 logos={activePresentation?.logos}
                 logoAlignment={activePresentation?.logoAlignment}
+                students={students}
+                onUpdateRoster={handleUpdateRoster}
+                onStudentSelected={handleStudentSelectedByRoulette}
               />
             </div>
           )}

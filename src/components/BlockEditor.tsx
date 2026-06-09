@@ -67,6 +67,7 @@ const PRESET_IMAGES = [
 interface BlockEditorProps {
   slide: Slide;
   onUpdateSlide: (updatedSlide: Slide) => void;
+  compact?: boolean;
 }
 
 const AVAILABLE_BLOCKS: { type: BlockType; label: string; icon: any; placeholder: string }[] = [
@@ -79,7 +80,29 @@ const AVAILABLE_BLOCKS: { type: BlockType; label: string; icon: any; placeholder
   { type: 'video', label: 'YouTube Video Link', icon: Video, placeholder: 'Enter YouTube video link or 11-digit video ID...' }
 ];
 
-export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) {
+const mapLegacySizeToPx = (size: string | number | undefined): number => {
+  if (size === undefined || size === null) return 14; 
+  if (typeof size === 'number') return size;
+  if (/^\d+/.test(String(size))) return parseInt(String(size), 10);
+  
+  switch (size) {
+    case 'xs': return 10;
+    case 'sm': return 12;
+    case 'base': return 14;
+    case 'lg': return 16;
+    case 'xl': return 20;
+    case '2xl': return 28;
+    case '3xl': return 36;
+    case '4xl': return 48;
+    case '5xl': return 64;
+    default: {
+      const parsed = parseInt(String(size), 10);
+      return isNaN(parsed) ? 14 : parsed;
+    }
+  }
+};
+
+export default function BlockEditor({ slide, onUpdateSlide, compact = false }: BlockEditorProps) {
   const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
   const [logoInputVal, setLogoInputVal] = useState('');
 
@@ -173,82 +196,152 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
 
   return (
     <div className="space-y-6" id={`block-editor-slide-${slide.id}`}>
-      {/* Slide settings panel */}
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
-        <h4 className="text-xs font-mono font-medium text-slate-500 uppercase flex items-center space-x-1">
-          <Layout className="w-3.5 h-3.5" />
-          <span>Slide Core Properties</span>
-        </h4>
+      {/* Side-by-side presentation designer layout */}
+      <div className={compact ? "flex flex-col gap-6" : "grid grid-cols-1 xl:grid-cols-12 gap-6 items-start"}>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Slide Header Title</label>
-            <input
-              type="text"
-              value={slide.title}
-              onChange={e => handleUpdateSetting('title', e.target.value)}
-              className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
-              placeholder="Enter slide dashboard identifier..."
-            />
-          </div>
+        {/* Right Column (Editing Controls) / Settings Column if compact */}
+        <div className={compact ? "space-y-4" : "xl:col-span-4 order-2 xl:order-2 space-y-4 xl:sticky xl:top-4 pr-1 pb-4"}>
+          
+          {/* Slide Settings Card */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4 shadow-3xs">
+            <h4 className="text-xs font-mono font-medium text-slate-500 uppercase flex items-center space-x-1">
+              <Layout className="w-3.5 h-3.5 text-slate-500" />
+              <span>Slide Settings</span>
+            </h4>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Slide Header Title</label>
+                <div className="relative flex items-center">
+                  <input
+                    type="text"
+                    value={slide.title}
+                    onChange={e => handleUpdateSetting('title', e.target.value)}
+                    className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 pr-8"
+                    placeholder="Enter slide title (leave blank to delete title heading on slide)"
+                  />
+                  {slide.title && (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateSetting('title', '')}
+                      className="absolute right-2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                      title="Clear / Delete Header Title"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Layout Backing Style</label>
-            <select
-              value={slide.backgroundStyle}
-              onChange={e => handleUpdateSetting('backgroundStyle', e.target.value)}
-              className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-            >
-              <option value="slate">Deep Slate (High Contrast Light)</option>
-              <option value="editorial">Warm Editorial (Warm Cream Editorial)</option>
-              <option value="ocean">Ocean Calm (Deep Blue Oceanic Waves)</option>
-              <option value="terminal">Code Terminal (Sleek Hacker Terminal)</option>
-            </select>
-          </div>
-        </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Layout Backing Style</label>
+                <select
+                  value={slide.backgroundStyle}
+                  onChange={e => handleUpdateSetting('backgroundStyle', e.target.value)}
+                  className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                >
+                  <option value="slate">Deep Slate (High Contrast Light)</option>
+                  <option value="editorial">Warm Editorial (Warm Cream Editorial)</option>
+                  <option value="ocean">Ocean Calm (Deep Blue Oceanic Waves)</option>
+                  <option value="terminal">Code Terminal (Sleek Hacker Terminal)</option>
+                  <option value="midnight_aurora">Midnight Aurora (Deep Purple / Indigo Glow)</option>
+                  <option value="forest_moss">Forest Moss (Deep Earthy Nature Green)</option>
+                  <option value="soft_lavender">Soft Lavender (Gentle Cream-Purple Elegance)</option>
+                  <option value="sunset_glow">Sunset Orange (Vibrant Warm Peach / Orange)</option>
+                  <option value="minimal_chalk">Minimal Chalk (Sleek Graphite Dark Theme)</option>
+                  <option value="cyberpunk_neon">Cyberpunk Neon (Electric Pink & Cyan Glow)</option>
+                  <option value="candy_pop">Candy Pop (Sweet Pink & Teal Highlights)</option>
+                </select>
+              </div>
 
-        {/* Timing advanced */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-t border-slate-100 pt-3 gap-3">
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="auto-advance-toggle"
-              checked={slide.autoAdvance}
-              onChange={e => handleUpdateSetting('autoAdvance', e.target.checked)}
-              className="rounded text-sky-600 focus:ring-sky-500 w-4 h-4"
-            />
-            <label htmlFor="auto-advance-toggle" className="text-xs font-medium text-slate-700 cursor-pointer">
-              Enable Auto-Advance Flow (Programmable Timing)
-            </label>
-          </div>
-
-          {slide.autoAdvance && (
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-slate-500">Advance Slide after:</span>
-              <input
-                type="number"
-                min="3"
-                max="300"
-                value={slide.duration}
-                onChange={e => handleUpdateSetting('duration', parseInt(e.target.value) || 10)}
-                className="w-16 px-2 py-1 border border-slate-200 bg-white rounded text-xs text-center font-mono"
-              />
-              <span className="text-xs text-slate-500">sec</span>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Layout Style (Media Arrangement)</label>
+                <select
+                  value={slide.layoutStyle || 'stacked'}
+                  onChange={e => handleUpdateSetting('layoutStyle', e.target.value)}
+                  className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 font-semibold text-slate-755"
+                >
+                  <option value="stacked">Stacked (Media Centered Below Content)</option>
+                  <option value="split">Split Layout (Media on Right / Content on Left)</option>
+                  <option value="split-reverse">Split Layout (Media on Left / Content on Right)</option>
+                </select>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
+
+            {/* Timing advanced */}
+            <div className="flex flex-col border-t border-slate-100 pt-3 gap-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="auto-advance-toggle"
+                  checked={slide.autoAdvance}
+                  onChange={e => handleUpdateSetting('autoAdvance', e.target.checked)}
+                  className="rounded text-sky-600 focus:ring-sky-500 w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="auto-advance-toggle" className="text-xs font-medium text-slate-700 cursor-pointer select-none">
+                  Enable Auto-Advance Flow (Programmable Timing)
+                </label>
+              </div>
+
+              {slide.autoAdvance && (
+                <div className="flex items-center space-x-2 bg-white border border-slate-150 rounded p-1.5 text-xs animate-fade-in select-none">
+                  <span className="text-[10px] text-slate-500 font-medium">Advance Slide after:</span>
+                  <input
+                    type="number"
+                    min="3"
+                    max="300"
+                    value={slide.duration}
+                    onChange={e => handleUpdateSetting('duration', parseInt(e.target.value) || 10)}
+                    className="w-16 px-1.5 py-0.5 border border-slate-200 bg-white rounded text-xs text-center font-mono"
+                  />
+                  <span className="text-[10px] text-slate-500 font-medium">sec</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ADD BLOCKS QUICK ACCESS CARD (Floating on the Left side!) */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3.5 shadow-3xs hover:border-slate-300 transition-all select-none">
+            <div>
+              <span className="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest block">Add Elements to Slide</span>
+              <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                Click any item below to inject it immediately. Reorder elements in the workspace column on the right.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {AVAILABLE_BLOCKS.map(blockSpec => {
+                const SpecIcon = blockSpec.icon;
+                return (
+                  <button
+                    key={blockSpec.type}
+                    type="button"
+                    onClick={() => handleAddBlock(blockSpec.type)}
+                    className="flex items-center space-x-2 p-2 rounded-xl border border-slate-150 text-left bg-slate-50 hover:bg-slate-100 transition-all hover:scale-102 select-none group shadow-3xs cursor-pointer focus:ring-1 focus:ring-sky-350"
+                  >
+                    <div className="p-1 bg-white rounded border border-slate-200 text-slate-500 transition-colors group-hover:text-sky-600 group-hover:border-sky-300 flex-shrink-0">
+                      <SpecIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold text-slate-800 truncate leading-tight">{blockSpec.label}</p>
+                      <p className="text-[8px] font-mono text-slate-400 truncate tracking-tight">{blockSpec.type}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
       {/* Slide Header Logo Properties Section */}
       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
+        <div className={`flex ${compact ? 'flex-col items-start gap-3' : 'flex-col sm:flex-row sm:items-center sm:justify-between gap-3'} border-b border-slate-100 pb-3`}>
           <h4 className="text-xs font-mono font-medium text-slate-500 uppercase flex items-center space-x-1.5">
             <Award className="w-3.5 h-3.5 text-teal-650" />
             <span>Slide Header Logo Properties</span>
           </h4>
 
           {/* Logo Alignment Buttons */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider">Alignment:</span>
             <div className="inline-flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
               {[
@@ -263,7 +356,7 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
                     key={alignOption.id}
                     type="button"
                     onClick={() => handleUpdateSetting('logoAlignment', alignOption.id)}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-white text-teal-600 shadow-3xs border border-transparent'
                         : 'text-slate-500 hover:text-slate-805'
@@ -280,9 +373,9 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div className={compact ? "space-y-4" : "grid grid-cols-1 md:grid-cols-12 gap-4"}>
           {/* Active Logos list for this slide */}
-          <div className="md:col-span-6 space-y-1.5">
+          <div className={compact ? "space-y-1.5" : "md:col-span-6 space-y-1.5"}>
             <span className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
               Slide Logos Sequence ({(slide.logos || []).length})
             </span>
@@ -335,7 +428,7 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
           </div>
 
           {/* Add a new logo to this slide */}
-          <div className="md:col-span-6 space-y-2">
+          <div className={compact ? "space-y-2" : "md:col-span-6 space-y-2"}>
             <span className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
               Add Slide-Specific Logo Override
             </span>
@@ -432,24 +525,76 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
             </div>
           </div>
         </div>
-      </div>
+      </div> {/* Closes Slide Header Logo Properties Section */}
+    </div> {/* Closes Left Column */}
 
-      {/* Slide body blocks wrapper */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-mono font-medium text-slate-500 uppercase">Interactive Elements Grid</span>
-          <span className="text-[10px] text-slate-400 font-sans">Blocks are rendered in sequence below</span>
-        </div>
-
-        {slide.blocks.length === 0 ? (
-          <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-xs text-slate-400">
-            This slide is current empty! Choose a content block below to begin designing.
+    {/* Left Column (Main Canvas) / Block list if compact */}
+    <div className={compact ? "bg-white p-5 border border-slate-200 shadow-3xs space-y-4 rounded-2xl pr-2 pb-4" : "xl:col-span-8 order-1 xl:order-1 bg-white p-5 border border-slate-200 shadow-3xs space-y-4 rounded-2xl pr-2 pb-4"}>
+          <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+            <div>
+              <span className="text-xs font-mono font-bold text-slate-500 uppercase">Interactive Elements Grid</span>
+              <p className="text-[10px] text-slate-400 mt-0.5">Blocks are rendered in sequence below. Edit and customize properties live.</p>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-100 border rounded text-slate-500 font-bold">
+              {slide.blocks.length} active nodes
+            </span>
           </div>
-        ) : (
-          <div className="space-y-3">
+
+          {slide.blocks.length === 0 ? (
+            <div className="border border-dashed border-slate-200 rounded-xl p-10 text-center text-xs text-slate-400">
+              This slide is currently empty! Choose a content block on the left panel to begin designing.
+            </div>
+          ) : (
+            <div className="space-y-4">
             {slide.blocks.map((block, index) => {
               const BlockIcon = AVAILABLE_BLOCKS.find(b => b.type === block.type)?.icon || Type;
               const placeholder = AVAILABLE_BLOCKS.find(b => b.type === block.type)?.placeholder || '';
+
+              let editorFontClass = 'font-sans';
+              if (block.fontFamily) {
+                switch (block.fontFamily) {
+                  case 'sans': editorFontClass = 'font-sans'; break;
+                  case 'serif': editorFontClass = 'font-serif'; break;
+                  case 'mono': editorFontClass = 'font-mono'; break;
+                  case 'display': editorFontClass = 'font-display font-bold tracking-tight'; break;
+                  case 'handwritten': editorFontClass = 'font-handwritten text-sm tracking-wide'; break;
+                }
+              }
+
+              const isNumericSize = block.fontSize !== undefined && block.fontSize !== null && (
+                typeof block.fontSize === 'number' || 
+                /^\d+/.test(String(block.fontSize))
+              );
+
+              let editorSizeClass = '';
+              if (!isNumericSize && block.fontSize) {
+                switch (block.fontSize) {
+                  case 'xs': editorSizeClass = 'text-[10px]'; break;
+                  case 'sm': editorSizeClass = 'text-[11px]'; break;
+                  case 'base': editorSizeClass = 'text-xs'; break;
+                  case 'lg': editorSizeClass = 'text-sm font-semibold'; break;
+                  case 'xl': editorSizeClass = 'text-base font-bold'; break;
+                  case '2xl': editorSizeClass = 'text-lg font-bold'; break;
+                  case '3xl': editorSizeClass = 'text-xl font-extrabold'; break;
+                  case '4xl': editorSizeClass = 'text-2xl font-black'; break;
+                  case '5xl': editorSizeClass = 'text-3xl font-black'; break;
+                  default: editorSizeClass = 'text-xs';
+                }
+              } else if (!block.fontSize) {
+                editorSizeClass = 'text-xs';
+              }
+
+              const editorInlineStyle: React.CSSProperties = block.fontColor ? { color: block.fontColor } : {};
+              if (isNumericSize) {
+                const numericVal = parseFloat(String(block.fontSize));
+                if (!isNaN(numericVal)) {
+                  if (/^\d+$/.test(String(block.fontSize).trim()) || typeof block.fontSize === 'number') {
+                    editorInlineStyle.fontSize = `${numericVal}px`;
+                  } else {
+                    editorInlineStyle.fontSize = String(block.fontSize);
+                  }
+                }
+              }
 
               return (
                 <div 
@@ -485,18 +630,161 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
                   </div>
 
                   {/* Icon label header */}
-                  <div className="flex items-center space-x-2 text-slate-400 font-medium text-xs mb-3">
-                    <BlockIcon className="w-3.5 h-3.5 text-slate-500" />
-                    <span className="text-slate-600 uppercase tracking-wide font-mono text-[10px]">
-                      {block.type} Block
-                    </span>
+                  <div className="flex items-center justify-between text-slate-400 font-medium text-xs mb-3">
+                    <div className="flex items-center space-x-2">
+                      <BlockIcon className="w-3.5 h-3.5 text-slate-500" />
+                      <span className="text-slate-600 uppercase tracking-wide font-mono text-[10px]">
+                        {block.type} Block
+                      </span>
+                    </div>
+
+                    {/* Block Alignment & Font/Color Customizer Selection (Available for appropriate text/content types) */}
+                    {['heading', 'text', 'highlight', 'list', 'quiz', 'image', 'video'].includes(block.type) && (
+                      <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] w-full ${compact ? 'flex-col items-stretch mt-2 border-t border-slate-100 pt-2.5' : 'md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100'}`}>
+                        {/* Wrapper for side-by-side items if compact */}
+                        <div className={`flex flex-wrap items-center ${compact ? 'justify-between w-full' : 'gap-3'}`}>
+                          {/* Alignment */}
+                          <div className="flex items-center space-x-1">
+                            <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">Align:</span>
+                            <div className="inline-flex bg-slate-50 p-0.5 rounded border border-slate-200">
+                              {(['left', 'center', 'right'] as const).map((align) => {
+                                const isSelected = (block.alignment || 'left') === align;
+                                return (
+                                  <button
+                                    key={align}
+                                    type="button"
+                                    onClick={() => handleUpdateBlock(block.id, { alignment: align })}
+                                    className={`px-1.5 py-0.5 rounded text-[9px] font-bold transition-all cursor-pointer ${
+                                      isSelected 
+                                        ? 'bg-slate-900 text-white shadow-3xs' 
+                                        : 'text-slate-500 hover:text-slate-800'
+                                    }`}
+                                    title={`Align content ${align}`}
+                                  >
+                                    {align.toUpperCase()}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Font Family Selector */}
+                          <div className="flex items-center space-x-1.5">
+                            <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">Font:</span>
+                            <select
+                              value={block.fontFamily || 'sans'}
+                              onChange={e => handleUpdateBlock(block.id, { fontFamily: e.target.value as any })}
+                              className="bg-white border border-slate-200 text-[10px] rounded px-1.5 py-0.5 text-slate-700 outline-none font-sans font-medium"
+                            >
+                              <option value="sans">Standard (Sans)</option>
+                              <option value="serif">Elegant (Serif)</option>
+                              <option value="mono">Code (Mono)</option>
+                              <option value="display">Strong (Display)</option>
+                              <option value="handwritten">Creative (Handwritten)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Font Size Dynamic Pixel Selector */}
+                        <div className={`flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 shrink-0 ${compact ? 'w-full justify-between' : ''}`}>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider">Size:</span>
+                            
+                            {/* Direct Integer input supporting values from 1 to 1000px */}
+                            <input
+                              type="number"
+                              min="1"
+                              max="1000"
+                              value={mapLegacySizeToPx(block.fontSize)}
+                              onChange={e => {
+                                const val = parseInt(e.target.value, 10);
+                                if (!isNaN(val)) {
+                                  handleUpdateBlock(block.id, { fontSize: Math.max(1, Math.min(1000, val)) });
+                                }
+                              }}
+                              className="w-12 bg-white border border-slate-200 text-[10px] font-bold text-center rounded px-1 py-0.5 text-slate-800 outline-none focus:border-indigo-500"
+                              title="Enter exact pixel value between 1 and 1000 px"
+                            />
+
+                            {/* Quick selection increments */}
+                            <select
+                              value={mapLegacySizeToPx(block.fontSize).toString()}
+                              onChange={e => {
+                                const val = parseInt(e.target.value, 10);
+                                if (!isNaN(val)) {
+                                  handleUpdateBlock(block.id, { fontSize: val });
+                                }
+                              }}
+                              className="bg-white border border-slate-200 text-[10px] rounded px-1 py-0.5 text-slate-700 outline-none font-sans font-semibold cursor-pointer"
+                              title="Standard structural presets"
+                            >
+                              {[8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 64, 72, 84, 96, 120, 150].map(s => (
+                                <option key={s} value={s}>{s} px</option>
+                              ))}
+                              {! [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 64, 72, 84, 96, 120, 150].includes(mapLegacySizeToPx(block.fontSize)) && (
+                                <option value={mapLegacySizeToPx(block.fontSize)}>{mapLegacySizeToPx(block.fontSize)} px (Custom)</option>
+                              )}
+                            </select>
+                          </div>
+
+                          {/* Responsive slider for rapid visually-driven resizing (hidden in compact split layout) */}
+                          {!compact && (
+                            <input
+                              type="range"
+                              min="8"
+                              max="120"
+                              value={Math.min(120, Math.max(8, mapLegacySizeToPx(block.fontSize)))}
+                              onChange={e => {
+                                const val = parseInt(e.target.value, 10);
+                                handleUpdateBlock(block.id, { fontSize: val });
+                              }}
+                              className="w-16 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-800"
+                              title="Drag to resize between 8px and 120px"
+                            />
+                          )}
+                        </div>
+
+                        {/* Font Color Picker */}
+                        <div className={`flex items-center gap-1.5 ${compact ? 'w-full justify-between bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5' : 'pl-2 border-l border-slate-150'}`}>
+                          <div className="flex items-center space-x-1.5">
+                            <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">Color:</span>
+                            <input
+                              type="color"
+                              value={block.fontColor && block.fontColor.startsWith('#') ? block.fontColor : '#1e293b'}
+                              onChange={e => handleUpdateBlock(block.id, { fontColor: e.target.value })}
+                              className="w-4 h-4 p-0 bg-transparent border-0 rounded cursor-pointer overflow-hidden max-w-[16px] max-h-[16px]"
+                              title="Choose color picker"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Def"
+                              value={block.fontColor || ''}
+                              onChange={e => handleUpdateBlock(block.id, { fontColor: e.target.value })}
+                              className="text-[10px] w-14 font-mono uppercase bg-white border border-slate-200 rounded px-1.5 py-0.5 outline-none focus:border-sky-500 placeholder-slate-300"
+                              title="Enter hex color like #FF3300"
+                            />
+                          </div>
+                          {block.fontColor && (
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateBlock(block.id, { fontColor: undefined })}
+                              className="text-[9px] font-semibold text-rose-500 hover:text-rose-600 bg-white border border-rose-100 rounded px-1.5 py-0.5 transition-colors cursor-pointer"
+                              title="Clear color"
+                            >
+                              Reset
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Real-time raw editing based on types */}
                   {block.type === 'heading' && (
                     <input
                       type="text"
-                      className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 outline-none border-b border-dashed border-transparent focus:border-sky-500 pb-1"
+                      style={editorInlineStyle}
+                      className={`w-full outline-none border-b border-dashed border-transparent focus:border-sky-500 pb-1 font-semibold text-slate-800 placeholder-slate-300 ${editorFontClass} ${editorSizeClass}`}
                       placeholder={placeholder}
                       value={block.content}
                       onChange={e => handleUpdateBlock(block.id, { content: e.target.value })}
@@ -506,7 +794,8 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
                   {block.type === 'text' && (
                     <textarea
                       rows={3}
-                      className="w-full text-xs text-slate-755 placeholder-slate-300 outline-none border border-dashed border-slate-100 rounded-lg p-2 focus:border-sky-500 resize-none"
+                      style={editorInlineStyle}
+                      className={`w-full outline-none border border-dashed border-slate-100 rounded-lg p-2 focus:border-sky-500 resize-none text-slate-755 placeholder-slate-300 ${editorFontClass} ${editorSizeClass}`}
                       placeholder={placeholder}
                       value={block.content}
                       onChange={e => handleUpdateBlock(block.id, { content: e.target.value })}
@@ -517,7 +806,8 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
                     <div className="flex items-start space-x-2 rounded-lg bg-sky-50 border border-sky-100 p-2 text-sky-800">
                       <textarea
                         rows={2}
-                        className="w-full text-xs placeholder-sky-300 outline-none bg-transparent resize-none border-none focus:ring-0 p-0"
+                        style={editorInlineStyle}
+                        className={`w-full outline-none bg-transparent resize-none border-none focus:ring-0 p-0 placeholder-sky-300 ${editorFontClass} ${editorSizeClass}`}
                         placeholder={placeholder}
                         value={block.content}
                         onChange={e => handleUpdateBlock(block.id, { content: e.target.value })}
@@ -529,7 +819,8 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
                     <div className="space-y-2">
                       <input
                         type="text"
-                        className="w-full text-xs font-medium text-slate-600 placeholder-slate-300 outline-none border-b border-slate-100 focus:border-sky-500 pb-1"
+                        style={editorInlineStyle}
+                        className={`w-full outline-none border-b border-slate-100 focus:border-sky-500 pb-1 font-medium text-slate-600 placeholder-slate-300 ${editorFontClass} ${editorSizeClass}`}
                         placeholder="Bullet category title..."
                         value={block.content}
                         onChange={e => handleUpdateBlock(block.id, { content: e.target.value })}
@@ -542,7 +833,8 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
                             <span className="text-xs text-slate-400 font-mono">•</span>
                             <input
                               type="text"
-                              className="flex-1 text-xs text-slate-600 outline-none focus:border-b border-dashed border-sky-400 pb-0.5"
+                              style={editorInlineStyle}
+                              className={`flex-1 outline-none focus:border-b border-dashed border-sky-400 pb-0.5 text-slate-600 ${editorFontClass} ${editorSizeClass}`}
                               value={item}
                               onChange={e => {
                                 const fresh = [...(block.listItems || [])];
@@ -894,32 +1186,7 @@ export default function BlockEditor({ slide, onUpdateSlide }: BlockEditorProps) 
           </div>
         )}
       </div>
-
-      {/* Add New Block Selector Bar */}
-      <div className="border-t border-slate-100 pt-5">
-        <span className="text-xs font-mono font-medium text-slate-500 uppercase block mb-3">Add Elements to Slide</span>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {AVAILABLE_BLOCKS.map(blockSpec => {
-            const SpecIcon = blockSpec.icon;
-            return (
-              <button
-                key={blockSpec.type}
-                type="button"
-                onClick={() => handleAddBlock(blockSpec.type)}
-                className="flex items-center space-x-2 p-2 rounded-xl border border-slate-200 text-left bg-slate-50 hover:bg-slate-100 transition-colors select-none group"
-              >
-                <div className="p-1.5 bg-white rounded-lg border border-slate-150 text-slate-600 transition-colors group-hover:text-sky-600">
-                  <SpecIcon className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-slate-800 truncate">{blockSpec.label}</p>
-                  <p className="text-[9px] text-slate-400 truncate">{blockSpec.type}</p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
+  </div>
   );
 }

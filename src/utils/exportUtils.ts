@@ -3,7 +3,7 @@ import pptxgen from 'pptxgenjs';
 import { Presentation, Slide, SlideBlock } from '../types';
 
 // Convert hex styles to RGB
-function getStyleColors(style: 'slate' | 'editorial' | 'ocean' | 'terminal') {
+function getStyleColors(style: string) {
   switch (style) {
     case 'slate':
       return {
@@ -37,6 +37,83 @@ function getStyleColors(style: 'slate' | 'editorial' | 'ocean' | 'terminal') {
         textHex: '22C55E',
         subtextHex: '86EFAC',
         accentHex: 'F3F4F6'
+      };
+    case 'midnight_aurora':
+      return {
+        bg: [46, 16, 101], // #2e1065 (Deep Purple)
+        text: [250, 245, 255], // #faf5ff
+        subtext: [216, 180, 254], // #d8b4fe
+        accent: [168, 85, 247], // #a855f7
+        bgHex: '2E1065',
+        textHex: 'FAF5FF',
+        subtextHex: 'D8B4FE',
+        accentHex: 'A855F7'
+      };
+    case 'forest_moss':
+      return {
+        bg: [20, 48, 30], // #14301e (Earthy deep green)
+        text: [240, 253, 244], // #f0fdf4
+        subtext: [187, 247, 208], // #bbf7d0
+        accent: [34, 197, 94], // #22c55e
+        bgHex: '14301E',
+        textHex: 'F0FDF4',
+        subtextHex: 'BBF7D0',
+        accentHex: '22C55E'
+      };
+    case 'soft_lavender':
+      return {
+        bg: [250, 245, 255], // #faf5ff (Lavender cream)
+        text: [46, 16, 101], // #2e1065
+        subtext: [107, 33, 168], // #6b21a8
+        accent: [139, 92, 246], // #8b5cf6
+        bgHex: 'FAF5FF',
+        textHex: '2E1065',
+        subtextHex: '6B21A8',
+        accentHex: '8B5CF6'
+      };
+    case 'sunset_glow':
+      return {
+        bg: [124, 45, 18], // #7c2d12 (Sunset deep orange)
+        text: [255, 247, 237], // #fff7ed
+        subtext: [253, 186, 116], // #fdba74
+        accent: [249, 115, 22], // #f97316
+        bgHex: '7C2D12',
+        textHex: 'FFF7ED',
+        subtextHex: 'FDBA74',
+        accentHex: 'F97316'
+      };
+    case 'minimal_chalk':
+      return {
+        bg: [28, 28, 30], // Carbon/Chalk black
+        text: [242, 242, 247], // light gray
+        subtext: [174, 174, 178], // mid gray
+        accent: [142, 142, 147], // neutral slate accent
+        bgHex: '1C1C1E',
+        textHex: 'F2F2F7',
+        subtextHex: 'AEAEB2',
+        accentHex: '8E8E93'
+      };
+    case 'cyberpunk_neon':
+      return {
+        bg: [15, 10, 25], // deep violet mystery
+        text: [244, 63, 150], // bright neon pink
+        subtext: [56, 189, 248], // sky blue neon
+        accent: [234, 179, 8], // toxic neon-yellow
+        bgHex: '0F0A19',
+        textHex: 'F43F96',
+        subtextHex: '38BDF8',
+        accentHex: 'EAB308'
+      };
+    case 'candy_pop':
+      return {
+        bg: [253, 244, 245], // pastel candy rose
+        text: [190, 24, 74], // deep rose red
+        subtext: [29, 187, 155], // pop teal accent
+        accent: [236, 72, 153], // candy pink
+        bgHex: 'FDF4F5',
+        textHex: 'BE184A',
+        subtextHex: '1DBB9B',
+        accentHex: 'EC4899'
       };
     case 'editorial':
     default:

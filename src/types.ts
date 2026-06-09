@@ -12,6 +12,10 @@ export interface SlideBlock {
   caption?: string; // Image caption
   imageUrl?: string; // Real image URL or base64 upload
   videoUrl?: string; // YouTube video URL or identifier
+  alignment?: 'left' | 'center' | 'right'; // Block alignment choice
+  fontFamily?: 'sans' | 'serif' | 'mono' | 'display' | 'handwritten';
+  fontSize?: string | number; // e.g. a number like 24 (px) or legacy size presets
+  fontColor?: string; // Custom hex or text CSS class override, or hex color
 }
 
 export interface Slide {
@@ -20,9 +24,10 @@ export interface Slide {
   blocks: SlideBlock[];
   duration: number; // in seconds, 0 = manual advance
   autoAdvance: boolean;
-  backgroundStyle: 'slate' | 'editorial' | 'ocean' | 'terminal';
+  backgroundStyle: 'slate' | 'editorial' | 'ocean' | 'terminal' | 'midnight_aurora' | 'forest_moss' | 'soft_lavender' | 'sunset_glow' | 'minimal_chalk' | 'cyberpunk_neon' | 'candy_pop';
   logos?: string[]; // Slide-specific logos override sequence
   logoAlignment?: 'left' | 'center' | 'right'; // Slide-specific logo alignment override
+  layoutStyle?: 'stacked' | 'split' | 'split-reverse'; // Slide arrangement choice
 }
 
 export interface Student {
