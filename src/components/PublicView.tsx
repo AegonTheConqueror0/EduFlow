@@ -675,19 +675,24 @@ export default function PublicView({
           )}
 
           {/* Public View Header Area */}
-          <div className="flex items-center justify-between w-full relative z-10 select-none">
-            <div className="flex items-center space-x-2">
-              {masterHeaderLogo && (
-                <div className="flex items-center gap-2 px-2.5 py-1 bg-[#ffffff10] border border-[#ffffff10] rounded-xl backdrop-blur-3xs" id="public-header-brand-logo-preview">
-                  <img 
-                    src={masterHeaderLogo} 
-                    alt="Presentation Logo" 
-                    className="w-auto object-contain max-w-[80px]"
-                    style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
-                    referrerPolicy="no-referrer"
-                  />
+          <header className="flex items-center justify-between w-full relative z-10 select-none border-b border-current/10 pb-4 mb-4">
+            <div className="flex items-center gap-3">
+              {slideLogos && slideLogos.length > 0 ? (
+                <div className={`flex items-center flex-wrap gap-3 px-3 py-2 bg-[#ffffff10] border border-[#ffffff10] rounded-2xl backdrop-blur-3xs ${
+                  slideLogoAlign === 'left' ? 'justify-start' : slideLogoAlign === 'right' ? 'justify-end' : 'justify-center'
+                }`} id="public-header-brand-logo-preview">
+                  {slideLogos.map((logoSrc, logoIdx) => (
+                    <img
+                      key={`public-header-logo-preview-${logoIdx}`}
+                      src={logoSrc}
+                      alt={`Header Logo ${logoIdx + 1}`}
+                      className="w-auto object-contain max-w-[90px]"
+                      style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
+                      referrerPolicy="no-referrer"
+                    />
+                  ))}
                 </div>
-              )}
+              ) : null}
               {activeSlide.autoAdvance && countdownValue > 0 && (
                 <span className="flex items-center space-x-1 text-[10px] sm:text-xs font-mono px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
                   <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />
@@ -708,7 +713,7 @@ export default function PublicView({
                 <span>Fullscreen</span>
               </button>
             </div>
-          </div>
+          </header>
 
           {/* Main Slide Core Content container */}
           <div className="flex-1 my-6 max-w-[95%] xl:max-w-[1440px] 2xl:max-w-[1680px] mx-auto w-full flex flex-col justify-center relative z-10 overflow-hidden">
@@ -721,29 +726,6 @@ export default function PublicView({
                 transition={{ duration: 0.35, ease: 'easeOut' }}
                 className="space-y-4"
               >
-                {/* Subjective Brand Logos on Top of Slide */}
-                {slideLogos && slideLogos.length > 0 && (
-                  <div 
-                    className={`flex flex-wrap gap-4 mb-4 ${
-                      slideLogoAlign === 'left' 
-                        ? 'justify-start' 
-                        : slideLogoAlign === 'right' 
-                          ? 'justify-end' 
-                          : 'justify-center'
-                    }`}
-                  >
-                    {slideLogos.map((logoSrc, logoIdx) => (
-                      <img 
-                        key={`slide-logo-emblem-preview-${logoIdx}`}
-                        src={logoSrc} 
-                        alt={`Brand Logo Emblem ${logoIdx + 1}`} 
-                        className="object-contain w-auto filter drop-shadow-xs select-none"
-                        style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
-                        referrerPolicy="no-referrer"
-                      />
-                    ))}
-                  </div>
-                )}
 
                 {/* Display title always first, if present */}
                 {activeSlide.title && activeSlide.title.trim() !== '' && (
@@ -942,24 +924,24 @@ export default function PublicView({
       )}
 
       {/* Public View Header Area */}
-      <div className="flex items-center justify-between w-full relative z-10 select-none">
-        <div className="flex items-center space-x-2">
-          {masterHeaderLogo ? (
-            <div className="flex items-center gap-2 px-2.5 py-1 bg-[#ffffff10] border border-[#ffffff10] rounded-xl backdrop-blur-3xs" id="public-header-brand-logo">
-              <img 
-                src={masterHeaderLogo} 
-                alt="Presentation Logo" 
-                className="w-auto object-contain max-w-[80px]"
-                style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
-                referrerPolicy="no-referrer"
-              />
-              <span className="text-[9px] font-mono text-current/40 uppercase tracking-wider hidden sm:inline border-l border-[#ffffff20] pl-2 font-bold">Formal Slide Show</span>
+      <header className="flex items-center justify-between w-full relative z-10 select-none border-b border-current/10 pb-4 mb-4">
+        <div className="flex items-center gap-3">
+          {slideLogos && slideLogos.length > 0 ? (
+            <div className={`flex items-center flex-wrap gap-3 px-3 py-2 bg-[#ffffff10] border border-[#ffffff10] rounded-2xl backdrop-blur-3xs ${
+              slideLogoAlign === 'left' ? 'justify-start' : slideLogoAlign === 'right' ? 'justify-end' : 'justify-center'
+            }`} id="public-header-brand-logo">
+              {slideLogos.map((logoSrc, logoIdx) => (
+                <img
+                  key={`public-header-logo-${logoIdx}`}
+                  src={logoSrc}
+                  alt={`Header Logo ${logoIdx + 1}`}
+                  className="w-auto object-contain max-w-[90px]"
+                  style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
+                  referrerPolicy="no-referrer"
+                />
+              ))}
             </div>
-          ) : (
-            <span className="text-[10px] sm:text-xs font-mono font-medium px-2.5 py-1 bg-[#ffffff10] border border-[#ffffff10] rounded-full uppercase tracking-wider backdrop-blur-3xs">
-              EduFlow Public Slide Screen
-            </span>
-          )}
+          ) : null}
           {activeSlide.autoAdvance && countdownValue > 0 && (
             <span className="flex items-center space-x-1 text-[10px] sm:text-xs font-mono px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 animate-pulse">
               <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-ping" />
@@ -1006,7 +988,7 @@ export default function PublicView({
             )}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Main Slide Core Content container */}
       <div className="flex-1 my-6 max-w-[95%] xl:max-w-[1440px] 2xl:max-w-[1680px] mx-auto w-full flex flex-col justify-center relative z-10">
@@ -1019,30 +1001,6 @@ export default function PublicView({
             transition={{ duration: 0.35, ease: 'easeOut' }}
             className="space-y-4"
           >
-            {/* Subjective Brand Logos on Top of Slide */}
-            {slideLogos && slideLogos.length > 0 && (
-              <div 
-                className={`flex flex-wrap gap-4 mb-4 animate-fade-in ${
-                  slideLogoAlign === 'left' 
-                    ? 'justify-start' 
-                    : slideLogoAlign === 'right' 
-                      ? 'justify-end' 
-                      : 'justify-center'
-                }`}
-                id="slide-top-logo-container"
-              >
-                {slideLogos.map((logoSrc, logoIdx) => (
-                  <img 
-                    key={`slide-logo-emblem-${logoIdx}`}
-                    src={logoSrc} 
-                    alt={`Brand Logo Emblem ${logoIdx + 1}`} 
-                    className={`object-contain w-auto filter drop-shadow-xs select-none`}
-                    style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
-                    referrerPolicy="no-referrer"
-                  />
-                ))}
-              </div>
-            )}
 
             {/* Display title always first, if present */}
             {activeSlide.title && activeSlide.title.trim() !== '' && (
