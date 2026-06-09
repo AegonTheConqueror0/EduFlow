@@ -30,6 +30,7 @@ interface PublicViewProps {
   logoUrl?: string;
   logos?: string[];
   logoAlignment?: 'left' | 'center' | 'right';
+  logoHeight?: number;
   students?: Student[];
   onUpdateRoster?: (students: Student[]) => void;
   onStudentSelected?: (student: Student) => void;
@@ -48,6 +49,7 @@ export default function PublicView({
   logoUrl,
   logos,
   logoAlignment = 'center',
+  logoHeight,
   students = [],
   onUpdateRoster,
   onStudentSelected,
@@ -680,7 +682,8 @@ export default function PublicView({
                   <img 
                     src={masterHeaderLogo} 
                     alt="Presentation Logo" 
-                    className="h-4.5 w-auto object-contain max-w-[80px]"
+                    className="w-auto object-contain max-w-[80px]"
+                    style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
                     referrerPolicy="no-referrer"
                   />
                   <span className="text-[9px] font-mono text-current/40 uppercase tracking-wider hidden sm:inline border-l border-[#ffffff20] pl-2 font-bold">Formal Slide Show</span>
@@ -739,7 +742,8 @@ export default function PublicView({
                         key={`slide-logo-emblem-preview-${logoIdx}`}
                         src={logoSrc} 
                         alt={`Brand Logo Emblem ${logoIdx + 1}`} 
-                        className="object-contain max-h-12 w-auto filter drop-shadow-xs select-none"
+                        className="object-contain w-auto filter drop-shadow-xs select-none"
+                        style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
                         referrerPolicy="no-referrer"
                       />
                     ))}
@@ -950,7 +954,8 @@ export default function PublicView({
               <img 
                 src={masterHeaderLogo} 
                 alt="Presentation Logo" 
-                className="h-4.5 w-auto object-contain max-w-[80px]"
+                className="w-auto object-contain max-w-[80px]"
+                style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
                 referrerPolicy="no-referrer"
               />
               <span className="text-[9px] font-mono text-current/40 uppercase tracking-wider hidden sm:inline border-l border-[#ffffff20] pl-2 font-bold">Formal Slide Show</span>
@@ -1036,7 +1041,8 @@ export default function PublicView({
                     key={`slide-logo-emblem-${logoIdx}`}
                     src={logoSrc} 
                     alt={`Brand Logo Emblem ${logoIdx + 1}`} 
-                    className={`object-contain max-h-12 w-auto filter drop-shadow-xs select-none`}
+                    className={`object-contain w-auto filter drop-shadow-xs select-none`}
+                    style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
                     referrerPolicy="no-referrer"
                   />
                 ))}

@@ -848,6 +848,7 @@ export default function App() {
                         logoUrl={activePresentation?.logoUrl}
                         logos={activePresentation?.logos}
                         logoAlignment={activePresentation?.logoAlignment}
+                        logoHeight={activePresentation?.logoHeight}
                         students={students}
                         onUpdateRoster={handleUpdateRoster}
                         onStudentSelected={handleStudentSelectedByRoulette}
@@ -893,6 +894,7 @@ export default function App() {
                 logoUrl={activePresentation?.logoUrl}
                 logos={activePresentation?.logos}
                 logoAlignment={activePresentation?.logoAlignment}
+                logoHeight={activePresentation?.logoHeight}
                 students={students}
                 onUpdateRoster={handleUpdateRoster}
                 onStudentSelected={handleStudentSelectedByRoulette}

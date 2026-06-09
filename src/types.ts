@@ -27,6 +27,7 @@ export interface Slide {
   backgroundStyle: 'slate' | 'editorial' | 'ocean' | 'terminal' | 'midnight_aurora' | 'forest_moss' | 'soft_lavender' | 'sunset_glow' | 'minimal_chalk' | 'cyberpunk_neon' | 'candy_pop';
   logos?: string[]; // Slide-specific logos override sequence
   logoAlignment?: 'left' | 'center' | 'right'; // Slide-specific logo alignment override
+  logoHeight?: number; // Slide-specific top logo height in px
   layoutStyle?: 'stacked' | 'split' | 'split-reverse'; // Slide arrangement choice
 }
 
@@ -55,5 +56,6 @@ export interface Presentation {
   logoUrl?: string; // Optional custom logo URL or Base64 uploaded image
   logos?: string[]; // Multiple logos
   logoAlignment?: 'left' | 'center' | 'right'; // Logo alignment: left, center, right
+  logoHeight?: number; // Optional default top logo height in px
 }
 

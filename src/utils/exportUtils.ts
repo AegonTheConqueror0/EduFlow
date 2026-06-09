@@ -173,8 +173,9 @@ export async function downloadPresentationPDF(presentation: Presentation) {
     const alignment = slide.logoAlignment || presentation.logoAlignment || 'center';
 
     if (logos.length > 0) {
-      const logoW = 18;
-      const logoH = 10;
+      const logoBaseHeightPx = slide.logoHeight ?? presentation.logoHeight ?? 48;
+      const logoH = Math.max(8, Math.min(18, Math.round(logoBaseHeightPx * 0.22)));
+      const logoW = Math.max(logoH * 1.8, 18);
       const gap = 3;
       const totalWidth = logos.length * logoW + (logos.length - 1) * gap;
       
@@ -416,8 +417,9 @@ export async function downloadPresentationPPTX(presentation: Presentation) {
       : (presentation.logos || (presentation.logoUrl ? [presentation.logoUrl] : []));
     
     if (logos.length > 0) {
-      const logoW = 0.8; // inches
-      const logoH = 0.4;
+      const logoBaseHeightPx = slide.logoHeight ?? presentation.logoHeight ?? 48;
+      const logoH = Math.max(0.3, Math.min(0.9, logoBaseHeightPx / 96));
+      const logoW = logoH * 1.8;
       const gap = 0.1;
       const totalWidth = logos.length * logoW + (logos.length - 1) * gap;
       

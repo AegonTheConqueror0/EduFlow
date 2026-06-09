@@ -371,6 +371,31 @@ export default function BlockEditor({ slide, onUpdateSlide, compact = false }: B
               })}
             </div>
           </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[10px] font-bold text-slate-400 font-mono uppercase tracking-wider">Logo Height</span>
+              <span className="text-[10px] text-slate-500 font-mono">{slide.logoHeight ?? 48}px</span>
+            </div>
+            <input
+              type="range"
+              min="16"
+              max="120"
+              value={slide.logoHeight ?? 48}
+              onChange={e => handleUpdateSetting('logoHeight', parseInt(e.target.value, 10))}
+              className="w-full accent-teal-500"
+              id="slide-logo-height-range"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleUpdateSetting('logoHeight', undefined)}
+                className="text-[10px] text-slate-500 hover:text-slate-800 bg-slate-100 px-2 py-1 rounded-lg transition-colors"
+              >
+                Reset to default
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className={compact ? "space-y-4" : "grid grid-cols-1 md:grid-cols-12 gap-4"}>
