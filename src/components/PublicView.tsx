@@ -144,7 +144,7 @@ export default function PublicView({
 
   // Handle Fullscreen requesting to target container
   const toggleFullscreen = () => {
-    const container = document.getElementById('public-slide-presentation-screen');
+    const container = containerRef.current || document.getElementById('public-slide-presentation-screen');
     if (!container) return;
 
     if (!isFullscreen) {
@@ -297,6 +297,33 @@ export default function PublicView({
   };
 
   const style = getStyleClasses();
+
+  const getTitleFontClass = () => {
+    switch (activeSlide.titleFontFamily) {
+      case 'serif': return 'font-serif';
+      case 'mono': return 'font-mono';
+      case 'display': return 'font-display font-bold tracking-tight';
+      case 'handwritten': return 'font-handwritten tracking-wide';
+      case 'sans':
+      default:
+        return 'font-sans';
+    }
+  };
+
+  const titleInlineStyle: React.CSSProperties = {};
+  if (activeSlide.titleFontColor) {
+    titleInlineStyle.color = activeSlide.titleFontColor;
+  }
+  if (activeSlide.titleFontSize !== undefined && activeSlide.titleFontSize !== null) {
+    const numericVal = parseFloat(String(activeSlide.titleFontSize));
+    if (!isNaN(numericVal)) {
+      titleInlineStyle.fontSize = `${numericVal}px`;
+    } else {
+      titleInlineStyle.fontSize = String(activeSlide.titleFontSize);
+    }
+  }
+
+  const titleFontClass = getTitleFontClass();
 
   const renderBlock = (block: SlideBlock) => {
     const alignClass = block.alignment === 'center'
@@ -729,7 +756,7 @@ export default function PublicView({
 
                 {/* Display title always first, if present */}
                 {activeSlide.title && activeSlide.title.trim() !== '' && (
-                  <h2 className={style.title}>
+                  <h2 className={`${style.title} ${titleFontClass}`} style={titleInlineStyle}>
                     {activeSlide.title}
                   </h2>
                 )}

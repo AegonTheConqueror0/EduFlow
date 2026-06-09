@@ -233,6 +233,68 @@ export default function BlockEditor({ slide, onUpdateSlide, compact = false }: B
                 </div>
               </div>
 
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Title Font</label>
+                  <select
+                    value={slide.titleFontFamily || 'sans'}
+                    onChange={e => handleUpdateSetting('titleFontFamily', e.target.value as any)}
+                    className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                  >
+                    <option value="sans">Sans</option>
+                    <option value="serif">Serif</option>
+                    <option value="mono">Monospace</option>
+                    <option value="display">Display</option>
+                    <option value="handwritten">Handwritten</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Title Size (px)</label>
+                  <input
+                    type="number"
+                    min="16"
+                    max="120"
+                    value={slide.titleFontSize ?? ''}
+                    onChange={e => handleUpdateSetting('titleFontSize', e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                    className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Title Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={slide.titleFontColor && slide.titleFontColor.startsWith('#') ? slide.titleFontColor : '#000000'}
+                      onChange={e => handleUpdateSetting('titleFontColor', e.target.value)}
+                      className="w-11 h-11 p-0 border border-slate-200 rounded-lg cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={slide.titleFontColor || ''}
+                      onChange={e => handleUpdateSetting('titleFontColor', e.target.value)}
+                      placeholder="#000000"
+                      className="flex-1 px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleUpdateSetting('titleFontFamily', undefined);
+                    handleUpdateSetting('titleFontSize', undefined);
+                    handleUpdateSetting('titleFontColor', undefined);
+                  }}
+                  className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  Reset title styling
+                </button>
+              </div>
+
               <div>
                 <label className="block text-xs font-medium text-slate-700 mb-1">Layout Backing Style</label>
                 <select

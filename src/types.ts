@@ -29,6 +29,9 @@ export interface Slide {
   logoAlignment?: 'left' | 'center' | 'right'; // Slide-specific logo alignment override
   logoHeight?: number; // Slide-specific top logo height in px
   layoutStyle?: 'stacked' | 'split' | 'split-reverse'; // Slide arrangement choice
+  titleFontFamily?: 'sans' | 'serif' | 'mono' | 'display' | 'handwritten';
+  titleFontSize?: string | number; // Custom title size in px or preset values
+  titleFontColor?: string; // Custom title color hex or CSS color name
 }
 
 export interface Student {
