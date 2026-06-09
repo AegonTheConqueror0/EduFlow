@@ -677,7 +677,7 @@ export default function PublicView({
           {/* Public View Header Area */}
           <div className="flex items-center justify-between w-full relative z-10 select-none">
             <div className="flex items-center space-x-2">
-              {masterHeaderLogo ? (
+              {masterHeaderLogo && (
                 <div className="flex items-center gap-2 px-2.5 py-1 bg-[#ffffff10] border border-[#ffffff10] rounded-xl backdrop-blur-3xs" id="public-header-brand-logo-preview">
                   <img 
                     src={masterHeaderLogo} 
@@ -686,12 +686,7 @@ export default function PublicView({
                     style={{ maxHeight: `${activeSlide.logoHeight ?? logoHeight ?? 48}px` }}
                     referrerPolicy="no-referrer"
                   />
-                  <span className="text-[9px] font-mono text-current/40 uppercase tracking-wider hidden sm:inline border-l border-[#ffffff20] pl-2 font-bold">Formal Slide Show</span>
                 </div>
-              ) : (
-                <span className="text-[10px] sm:text-xs font-mono font-medium px-2.5 py-1 bg-[#ffffff10] border border-[#ffffff10] rounded-full uppercase tracking-wider backdrop-blur-3xs">
-                  EduFlow Public Slide Screen
-                </span>
               )}
               {activeSlide.autoAdvance && countdownValue > 0 && (
                 <span className="flex items-center space-x-1 text-[10px] sm:text-xs font-mono px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
