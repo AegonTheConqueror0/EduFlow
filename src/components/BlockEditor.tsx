@@ -254,10 +254,10 @@ export default function BlockEditor({ slide, onUpdateSlide, compact = false }: B
                   <input
                     type="number"
                     min="16"
-                    max="120"
                     value={slide.titleFontSize ?? ''}
                     onChange={e => handleUpdateSetting('titleFontSize', e.target.value ? parseInt(e.target.value, 10) : undefined)}
                     className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    placeholder="e.g. 90 / 200 / 300"
                   />
                 </div>
 

@@ -169,13 +169,13 @@ export default function PublicView({
   }, [activeSlide.id]);
 
   // Determine container style classes
-  const getStyleClasses = () => {
+  const getStyleClasses = (presentationMode: boolean) => {
     switch (activeSlide.backgroundStyle) {
       case 'editorial':
         return {
           bg: 'bg-[#faf6f0] text-amber-950 selection:bg-amber-200',
           card: 'bg-[#f4ebe1] border-amber-900/15 shadow-xs text-amber-950',
-          title: isFullscreen 
+          title: presentationMode 
             ? 'font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-amber-950 mb-6 tracking-tight'
             : 'font-serif text-2xl sm:text-3xl lg:text-4xl font-medium text-amber-950 mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-amber-100/80 border-[#92400e20] text-amber-900',
@@ -186,7 +186,7 @@ export default function PublicView({
         return {
           bg: 'bg-gradient-to-br from-[#0c4a6e] to-[#0f172a] text-sky-100 selection:bg-sky-500/20',
           card: 'bg-[#0f172a]/70 border-sky-400/20 shadow-md backdrop-blur-xs text-sky-100',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-4 tracking-tight drop-shadow-xs line-clamp-2',
           highlight: 'bg-sky-950/80 border-sky-500/30 text-sky-300',
@@ -197,7 +197,7 @@ export default function PublicView({
         return {
           bg: 'bg-[#050b14] text-emerald-400 selection:bg-emerald-950',
           card: 'bg-[#081220] border-emerald-950 shadow-xs text-emerald-300',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-mono text-2xl sm:text-3xl lg:text-5xl font-semibold text-emerald-100 mb-6 tracking-tight'
             : 'font-mono text-xl sm:text-2xl lg:text-3xl font-semibold text-emerald-100 mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-[#051a10] border-emerald-900/80 text-emerald-400',
@@ -208,7 +208,7 @@ export default function PublicView({
         return {
           bg: 'bg-gradient-to-br from-[#1e1b4b] via-[#311042] to-[#0c0a24] text-purple-100 selection:bg-purple-500/20',
           card: 'bg-[#180e29]/80 border-purple-500/20 shadow-md text-purple-100',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-purple-950/75 border-purple-500/20 text-purple-300',
@@ -219,7 +219,7 @@ export default function PublicView({
         return {
           bg: 'bg-gradient-to-br from-[#062419] to-[#0b130e] text-emerald-100 selection:bg-emerald-500/20',
           card: 'bg-[#0c1c14]/80 border-emerald-550 shadow-md text-emerald-100',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-6 tracking-tight'
             : 'font-serif text-2xl sm:text-3xl lg:text-4xl font-medium text-white mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-emerald-950/75 border-emerald-500/10 text-emerald-300',
@@ -230,7 +230,7 @@ export default function PublicView({
         return {
           bg: 'bg-[#fafafc] text-indigo-950 selection:bg-indigo-100',
           card: 'bg-white border-indigo-100 shadow-sm text-indigo-950',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-indigo-950 mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-indigo-950 mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-indigo-50/80 border-indigo-100/60 text-indigo-900',
@@ -241,7 +241,7 @@ export default function PublicView({
         return {
           bg: 'bg-gradient-to-br from-[#451a03] to-[#1c0a00] text-orange-50 selection:bg-orange-500/20',
           card: 'bg-[#2d1102]/80 border-orange-550 shadow-md text-orange-50',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-6xl font-black text-orange-100 mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-100 mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-orange-950/80 border-orange-500/20 text-orange-300',
@@ -252,7 +252,7 @@ export default function PublicView({
         return {
           bg: 'bg-[#121214] text-zinc-300 selection:bg-zinc-800',
           card: 'bg-[#1c1c1f] border-zinc-800 text-zinc-200',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-white mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-normal text-white mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-zinc-900 border-zinc-800 text-zinc-300',
@@ -263,7 +263,7 @@ export default function PublicView({
         return {
           bg: 'bg-[#0c0517] text-cyan-400 selection:bg-pink-950',
           card: 'bg-[#110724] border-pink-500/20 shadow-pink-500/5 text-pink-400',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-mono text-2xl sm:text-3xl lg:text-5xl font-black text-pink-500 mb-6 tracking-tight uppercase'
             : 'font-mono text-xl sm:text-2xl lg:text-3xl font-bold text-pink-500 mb-4 tracking-tight uppercase line-clamp-2',
           highlight: 'bg-[#1a0014] border-pink-500/30 text-cyan-300',
@@ -274,7 +274,7 @@ export default function PublicView({
         return {
           bg: 'bg-[#fff5f6] text-rose-950 selection:bg-rose-100',
           card: 'bg-white border-rose-105 shadow-sm text-rose-900',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-5xl font-black text-rose-600 mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-rose-600 mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-rose-50/80 border-rose-100/60 text-rose-800',
@@ -286,7 +286,7 @@ export default function PublicView({
         return {
           bg: 'bg-[#f8fafc] text-slate-800 selection:bg-sky-100',
           card: 'bg-white border-slate-200 shadow-sm text-slate-700',
-          title: isFullscreen
+          title: presentationMode
             ? 'font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 tracking-tight'
             : 'font-display text-2xl sm:text-3xl lg:text-4xl font-medium text-slate-900 mb-4 tracking-tight line-clamp-2',
           highlight: 'bg-sky-50/70 border-sky-100 text-sky-800',
@@ -296,7 +296,8 @@ export default function PublicView({
     }
   };
 
-  const style = getStyleClasses();
+  const presentationMode = previewMode || isFullscreen;
+  const style = getStyleClasses(presentationMode);
 
   const getTitleFontClass = () => {
     switch (activeSlide.titleFontFamily) {
@@ -318,12 +319,18 @@ export default function PublicView({
     const numericVal = parseFloat(String(activeSlide.titleFontSize));
     if (!isNaN(numericVal)) {
       titleInlineStyle.fontSize = `${numericVal}px`;
+      titleInlineStyle.lineHeight = 1.05;
     } else {
       titleInlineStyle.fontSize = String(activeSlide.titleFontSize);
     }
   }
 
   const titleFontClass = getTitleFontClass();
+  const titleSizeOverrideClass = activeSlide.titleFontSize ? style.title
+    .replace(/\b(?:[a-z0-9]+:)?text-(?:xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g, '')
+    .replace(/\bline-clamp-\d+\b/g, '')
+    .replace(/\s+/g, ' ') : style.title;
+  const titleClassName = `${titleSizeOverrideClass} ${titleFontClass}`.trim();
 
   const renderBlock = (block: SlideBlock) => {
     const alignClass = block.alignment === 'center'
@@ -381,7 +388,7 @@ export default function PublicView({
           case '5xl': return 'text-4xl sm:text-5xl lg:text-6xl';
         }
       }
-      return isFullscreen ? 'text-2xl sm:text-3xl lg:text-4xl' : 'text-lg sm:text-xl lg:text-2xl';
+      return presentationMode ? 'text-2xl sm:text-3xl lg:text-4xl' : 'text-lg sm:text-xl lg:text-2xl';
     };
 
     const getNormalSize = () => {
@@ -399,7 +406,7 @@ export default function PublicView({
           case '5xl': return 'text-3xl sm:text-4xl lg:text-5xl';
         }
       }
-      return isFullscreen ? 'text-sm sm:text-base lg:text-lg' : 'text-xs sm:text-sm';
+      return presentationMode ? 'text-sm sm:text-base lg:text-lg' : 'text-xs sm:text-sm';
     };
 
     switch (block.type) {
@@ -756,7 +763,7 @@ export default function PublicView({
 
                 {/* Display title always first, if present */}
                 {activeSlide.title && activeSlide.title.trim() !== '' && (
-                  <h2 className={`${style.title} ${titleFontClass}`} style={titleInlineStyle}>
+                  <h2 className={titleClassName} style={titleInlineStyle}>
                     {activeSlide.title}
                   </h2>
                 )}
@@ -1031,7 +1038,7 @@ export default function PublicView({
 
             {/* Display title always first, if present */}
             {activeSlide.title && activeSlide.title.trim() !== '' && (
-              <h2 className={`${style.title}`}>
+              <h2 className={titleClassName} style={titleInlineStyle}>
                 {activeSlide.title}
               </h2>
             )}
