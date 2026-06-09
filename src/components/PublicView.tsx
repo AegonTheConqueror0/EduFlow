@@ -1161,7 +1161,7 @@ export default function PublicView({
         <button
           type="button"
           onClick={() => setShowRouletteDrawer(true)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-35 bg-sky-600/90 hover:bg-sky-500 text-white px-1.5 py-4 rounded-r-xl shadow-lg flex flex-col items-center gap-1.5 cursor-pointer text-[9px] font-bold tracking-wider hover:pl-2.5 transition-all duration-200 border border-l-0 border-white/20 select-none font-sans"
+          className="absolute left-0 top-1/2 -translate-y-76 z-35 bg-sky-600/90 hover:bg-sky-500 text-white px-1.5 py-4 rounded-r-xl shadow-lg flex flex-col items-center gap-1.5 cursor-pointer text-[9px] font-bold tracking-wider hover:pl-2.5 transition-all duration-200 border border-l-0 border-white/20 select-none font-sans"
           style={{ writingMode: 'vertical-lr' }}
           id="btn-floating-roulette-trigger"
         >
